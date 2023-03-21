@@ -16,6 +16,9 @@ const (
 
 	MsgInvalidReq        = "invalid request"
 	ErrInvalidRequestKey = "ErrInvalidRequest"
+
+	DbTypeRestaurant = 1
+	DbTypeUser       = 2
 )
 
 func AppRecover() {

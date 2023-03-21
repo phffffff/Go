@@ -7,14 +7,15 @@ import (
 	restaurantStorage "RestAPI/module/restaurant/storage"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strconv"
 )
 
 func DeleteRestaurant(appCtx appContext.AppContext) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		db := appCtx.GetMyDBConnection()
 
-		id, err := strconv.Atoi(c.Param("id"))
+		//id, err := strconv.Atoi(c.Param("id"))
+		uid, err := common.FromBase58(c.Param("id"))
+
 		if err != nil {
 			panic(common.ErrInvalidRequest(err))
 		}
@@ -22,9 +23,9 @@ func DeleteRestaurant(appCtx appContext.AppContext) gin.HandlerFunc {
 		store := restaurantStorage.NewSQLStore(db)
 		biz := restaurantBussines.NewDeleteRestaurantBiz(store)
 
-		if err := biz.DeleteRestaurant(c.Request.Context(), id); err != nil {
+		if err := biz.DeleteRestaurant(c.Request.Context(), int(uid.GetLocalID())); err != nil {
 			panic(err)
 		}
-		c.IndentedJSON(http.StatusOK, common.SimpleSuccesResponse(1))
+		c.IndentedJSON(http.StatusOK, common.SimpleSuccesResponse(true))
 	}
 }

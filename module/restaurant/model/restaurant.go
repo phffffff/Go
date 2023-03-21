@@ -46,12 +46,20 @@ type RestaurantCreate struct {
 
 func (RestaurantCreate) TableName() string { return Restaurant{}.TableName() }
 
+func (r *Restaurant) Mask(isAdminOrOwner bool) {
+	r.GenUID(common.DbTypeRestaurant)
+}
+
 type RestaurantUpdate struct {
 	Name *string `json:"name" gorm:"column:name;"`
 	Addr *string `json:"addr" gorm:"column:addr;"`
 }
 
 func (RestaurantUpdate) TableName() string { return Restaurant{}.TableName() }
+
+func (r *RestaurantCreate) Mask(isAdminOrOwner bool) {
+	r.GenUID(common.DbTypeRestaurant)
+}
 
 var (
 	ErrNameIsEmpty = errors.New("name can not be empty")
