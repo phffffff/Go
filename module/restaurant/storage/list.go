@@ -34,14 +34,29 @@ func (sql *sqlStore) ListDataWithCondition(
 		return nil, common.ErrDB(err)
 	}
 
-	offset := (paging.Page - 1) * paging.Limit
+	if cursor := paging.FakeCursor; cursor != "" {
+		uid, err := common.FromBase58(cursor)
+		if err != nil {
+			return nil, common.ErrInternal(err)
+		}
+		db = db.Where("id < ?", int(uid.GetLocalID()))
+	} else {
+		offset := (paging.Page - 1) * paging.Limit
+		db = db.Offset(offset)
+	}
 
 	if err := db.
-		Offset(offset).
 		Limit(paging.Limit).
 		Order("id desc").
 		Find(&restaurantList).Error; err != nil {
 		return nil, common.ErrDB(err)
 	}
+
+	if len(restaurantList) > 0 {
+		lastRestaurantList := restaurantList[len(restaurantList)-1]
+		lastRestaurantList.Mask(false)
+		paging.NextCursor = lastRestaurantList.FakeId.String()
+	}
+
 	return restaurantList, nil
 }

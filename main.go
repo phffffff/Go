@@ -2,8 +2,10 @@ package main
 
 import (
 	"RestAPI/component/appContext"
+	"RestAPI/component/uploadProvider"
 	"RestAPI/middleware"
 	"RestAPI/module/restaurant/transport/ginRestaurant"
+	"RestAPI/module/upload/transport/ginUpload"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
@@ -37,10 +39,20 @@ func main() {
 
 	db.Debug()
 
-	appCtx := appContext.NewAppCtx(db)
+	s3BucketName := os.Getenv("S3BucketName")
+	s3Region := os.Getenv("S3Region")
+	s3APIKey := os.Getenv("S3APIKey")
+	s3SecretKey := os.Getenv("S3SecretKey")
+	s3Domain := os.Getenv("S3Domain")
+	//secretKey := os.Getenv("SYSTEM_SECRET")
+
+	s3Provider := uploadProvider.NewS3Provider(s3BucketName, s3Region, s3APIKey, s3SecretKey, s3Domain)
+
+	appCtx := appContext.NewAppCtx(db, s3Provider)
 
 	router := gin.Default()
 	router.Use(middleware.Recover(appCtx))
+	router.Static("/static", "./static")
 
 	v1 := router.Group("/RestAPI")
 
@@ -60,6 +72,7 @@ func main() {
 		}
 	})
 
+	v1.POST("/uploadImage", ginUpload.UploadImage(appCtx))
 	v1.POST("/createRestaurant", ginRestaurant.CreateRestaurant(appCtx))
 
 	v1.POST("/createNote", func(c *gin.Context) {

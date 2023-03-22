@@ -3,7 +3,7 @@ package ginRestaurant
 import (
 	"RestAPI/common"
 	"RestAPI/component/appContext"
-	restaurantBussines "RestAPI/module/restaurant/Business"
+	restaurantBussines "RestAPI/module/restaurant/business"
 	restaurantStorage "RestAPI/module/restaurant/storage"
 	"github.com/gin-gonic/gin"
 	"net/http"
