@@ -30,7 +30,7 @@ func (biz *listRestaurantBiz) ListRestaurant(
 
 	data, err := biz.store.ListDataWithCondition(c, filter, paging)
 	if err != nil {
-		return nil, common.ErrCannotCRUDEmpty(restaurantModel.EntityName, common.ListConstant, err)
+		return nil, common.ErrCannotCRUDEntity(restaurantModel.EntityName, common.ListConstant, err)
 	}
 	return data, nil
 

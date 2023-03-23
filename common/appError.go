@@ -76,7 +76,7 @@ func ErrInvalidRequest(err error) *AppError {
 	return NewErrorResponse(err, MsgInvalidReq, err.Error(), ErrInvalidRequestKey)
 }
 
-func ErrCannotCRUDEmpty(entity string, crud string, err error) *AppError {
+func ErrCannotCRUDEntity(entity string, crud string, err error) *AppError {
 	return NewCustomError(
 		err,
 		fmt.Sprintf("cannot %s %s", crud, strings.ToLower(entity)),

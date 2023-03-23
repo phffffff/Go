@@ -24,7 +24,7 @@ func (biz *createRestaurantBiz) CreateRestaurantBiz(c context.Context, data *res
 	}
 
 	if err := biz.store.Create(c, data); err != nil {
-		return common.ErrCannotCRUDEmpty(restaurantModel.EntityName, common.CreateConstant, err)
+		return common.ErrCannotCRUDEntity(restaurantModel.EntityName, common.CreateConstant, err)
 	}
 	return nil
 }

@@ -6,6 +6,7 @@ import (
 	"RestAPI/middleware"
 	"RestAPI/module/restaurant/transport/ginRestaurant"
 	"RestAPI/module/upload/transport/ginUpload"
+	"RestAPI/module/user/transport/ginUser"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
@@ -56,6 +57,7 @@ func main() {
 
 	v1 := router.Group("/RestAPI")
 
+	v1.POST("/register", ginUser.Regiter(appCtx))
 	v1.GET("/listRestaurants", ginRestaurant.ListRestaurant(appCtx))
 	v1.GET("/getNotes", func(c *gin.Context) {
 		var noteArr []Note

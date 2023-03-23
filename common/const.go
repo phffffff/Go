@@ -19,15 +19,6 @@ const (
 
 	DbTypeRestaurant = 1
 	DbTypeUser       = 2
-
-	ErrFileTooLarge = "ErrFileTooLarge"
-	MsgFileTooLarge = "file too large"
-
-	ErrFileIsNotImage = "ErrFileIsNotImage"
-	MsgFileIsNotImage = "file is not image"
-
-	ErrCanNotSaveFile = "ErrCanNotSaveFile"
-	MsgCanNotSaveFile = "can not save file"
 )
 
 func AppRecover() {

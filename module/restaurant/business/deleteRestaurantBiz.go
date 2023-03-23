@@ -32,7 +32,7 @@ func (biz *deleteRestaurantBiz) DeleteRestaurant(c context.Context, id int) erro
 	}
 
 	if err := biz.store.Delete(c, id); err != nil {
-		return common.ErrCannotCRUDEmpty(restaurantModel.EntityName, common.DeleteConstant, err)
+		return common.ErrCannotCRUDEntity(restaurantModel.EntityName, common.DeleteConstant, err)
 	}
 	return nil
 }

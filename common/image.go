@@ -34,6 +34,7 @@ func (img *Image) Scan(value interface{}) error {
 
 	return nil
 }
+
 func (img *Image) Value() (driver.Value, error) {
 	if img == nil {
 		return nil, nil
