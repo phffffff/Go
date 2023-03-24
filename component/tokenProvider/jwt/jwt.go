@@ -1,4 +1,4 @@
-package jwtTokenProvider
+package jwt
 
 import (
 	"RestAPI/component/tokenProvider"
@@ -10,7 +10,7 @@ type jwtProvider struct {
 	secret string
 }
 
-func NewJwtProvider(secret string) *jwtProvider {
+func NewTokenJWTProvider(secret string) *jwtProvider {
 	return &jwtProvider{secret: secret}
 }
 
@@ -27,10 +27,12 @@ func (j *jwtProvider) Generate(data tokenProvider.TokenPayload, expiry int) (*to
 			IssuedAt:  time.Now().Local().Unix(),
 		},
 	})
+
 	myToken, err := token.SignedString([]byte(j.secret))
 	if err != nil {
 		return nil, err
 	}
+
 	return &tokenProvider.Token{
 		Token:   myToken,
 		Created: time.Now(),
@@ -38,16 +40,23 @@ func (j *jwtProvider) Generate(data tokenProvider.TokenPayload, expiry int) (*to
 	}, nil
 }
 
-//func (j *jwtProvider) Validate(myToken string) *tokenProvider.TokenPayload {
-//	res, err := jwt.ParseWithClaims(myToken, &myClaims{}, func(token *jwt.Token) (interface{}, error) {
-//		return []byte(j.secret), nil
-//	})
-//	if err != nil {
-//		return nil, tokenProvider.ErrorInvalidToken
-//	}
-//	if !res.Valid {
-//		return nil, tokenProvider.ErrorInvalidToken
-//	}
-//	return nil, nil
-//
-//}
+func (j *jwtProvider) Validate(myToken string) (*tokenProvider.TokenPayload, error) {
+	res, err := jwt.ParseWithClaims(myToken, &myClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(j.secret), nil
+	})
+	if err != nil {
+		return nil, tokenProvider.ErrorInvalidToken
+	}
+	if !res.Valid {
+		return nil, tokenProvider.ErrorInvalidToken
+	}
+
+	claims, ok := res.Claims.(*myClaims)
+	if !ok {
+		return nil, tokenProvider.ErrorInvalidToken
+	}
+	return &claims.Payload, nil
+}
+func (j *jwtProvider) String() string {
+	return "JWT implement Provider"
+}

@@ -3,6 +3,8 @@ package common
 import "log"
 
 const (
+	CurrentUser = "user"
+
 	CreateConstant = "CREATE"
 	UpdateConstant = "UPDATE"
 	DeleteConstant = "DELETE"

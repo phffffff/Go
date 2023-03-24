@@ -7,7 +7,11 @@ import (
 	"gorm.io/gorm"
 )
 
-func (sql *sqlStore) FindDataWithCondition(c context.Context, cond map[string]interface{}, moreKeys ...string) (*userModel.User, error) {
+func (sql *sqlStore) FindDataWithCondition(
+	c context.Context,
+	cond map[string]interface{},
+	moreKeys ...string) (*userModel.User, error) {
+
 	db := sql.db.Table(userModel.User{}.TableName())
 
 	//for i := range moreKeys {

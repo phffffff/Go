@@ -1,13 +1,15 @@
 package ginUser
 
 import (
+	"RestAPI/common"
 	"RestAPI/component/appContext"
 	"RestAPI/component/hasher"
-	jwtTokenProvider "RestAPI/component/tokenProvider/jwt"
+	"RestAPI/component/tokenProvider/jwt"
 	userBusiness "RestAPI/module/user/business"
 	userModel "RestAPI/module/user/model"
 	userStorage "RestAPI/module/user/storage"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func Login(appCtx appContext.AppContext) gin.HandlerFunc {
@@ -17,13 +19,20 @@ func Login(appCtx appContext.AppContext) gin.HandlerFunc {
 		if err := c.ShouldBind(&loginUserData); err != nil {
 			panic(err)
 		}
+
 		db := appCtx.GetMyDBConnection()
-		tokenProvider := jwtTokenProvider.NewJwtProvider("kien")
+		tokenProvider := jwt.NewTokenJWTProvider(appCtx.SecretKey())
 
 		store := userStorage.NewSqlStore(db)
 		md5 := hasher.NewMd5Hash()
 
-		biz := userBusiness.NewLoginBiz(store, md5, tokenProvider, 60*60*24*30)
+		biz := userBusiness.NewLoginBiz(store, tokenProvider, md5, 60*60*24*30)
+		account, err := biz.Login(c.Request.Context(), &loginUserData)
+
+		if err != nil {
+			panic(err)
+		}
+		c.IndentedJSON(http.StatusOK, common.SimpleSuccesResponse(account))
 
 	}
 }

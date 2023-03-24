@@ -19,7 +19,7 @@ type Restaurant struct {
 }
 
 func (Restaurant) TableName() string {
-	return "restaurant"
+	return "restaurants"
 }
 
 func (data *RestaurantCreate) Validate() error {

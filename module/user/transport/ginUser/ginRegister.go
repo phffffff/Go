@@ -3,9 +3,8 @@ package ginUser
 import (
 	"RestAPI/common"
 	"RestAPI/component/appContext"
-	hasher2 "RestAPI/component/hasher"
+	hasher "RestAPI/component/hasher"
 	userBusiness "RestAPI/module/user/business"
-
 	userModel "RestAPI/module/user/model"
 	userStorage "RestAPI/module/user/storage"
 	"github.com/gin-gonic/gin"
@@ -22,7 +21,7 @@ func Regiter(appCtx appContext.AppContext) gin.HandlerFunc {
 			panic(err)
 		}
 
-		hasher := hasher2.NewMd5Hash()
+		hasher := hasher.NewMd5Hash()
 		store := userStorage.NewSqlStore(db)
 		biz := userBusiness.NewRegisterBiz(store, hasher)
 
@@ -30,6 +29,9 @@ func Regiter(appCtx appContext.AppContext) gin.HandlerFunc {
 			panic(err)
 		}
 		data.Mask(false)
-		c.IndentedJSON(http.StatusOK, common.SimpleSuccesResponse(data.FakeId))
+		c.IndentedJSON(http.StatusOK, common.SimpleSuccesResponse(
+			data.FakeId.String(),
+			//data,
+		))
 	}
 }

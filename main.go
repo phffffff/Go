@@ -45,11 +45,11 @@ func main() {
 	s3APIKey := os.Getenv("S3APIKey")
 	s3SecretKey := os.Getenv("S3SecretKey")
 	s3Domain := os.Getenv("S3Domain")
-	//secretKey := os.Getenv("SYSTEM_SECRET")
+	secretKey := os.Getenv("SYSTEM_SECRET")
 
 	s3Provider := uploadProvider.NewS3Provider(s3BucketName, s3Region, s3APIKey, s3SecretKey, s3Domain)
 
-	appCtx := appContext.NewAppCtx(db, s3Provider)
+	appCtx := appContext.NewAppCtx(db, s3Provider, secretKey)
 
 	router := gin.Default()
 	router.Use(middleware.Recover(appCtx))
@@ -58,6 +58,8 @@ func main() {
 	v1 := router.Group("/RestAPI")
 
 	v1.POST("/register", ginUser.Regiter(appCtx))
+	v1.POST("/authenticate", ginUser.Login(appCtx))
+	v1.GET("/profile", middleware.RequiredAuth(appCtx), ginUser.Profile(appCtx))
 	v1.GET("/listRestaurants", ginRestaurant.ListRestaurant(appCtx))
 	v1.GET("/getNotes", func(c *gin.Context) {
 		var noteArr []Note

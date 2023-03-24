@@ -20,14 +20,14 @@ func (User) TableName() string {
 	return "users"
 }
 
-func (user *User) Mask() {
+func (user *User) Mask(isAdminOrOwned bool) {
 	user.GenUID(common.DbTypeUser)
 }
 
 type UserCreate struct {
 	common.SQLModel `json:",inline"`
 	Email           string        `json:"email" gorm:"column:email;"`
-	Password        string        `json:"-" gorm:"column:password;"`
+	Password        string        `json:"password" gorm:"column:password;"`
 	LastName        string        `json:"last_name" gorm:"column:last_name;"`
 	FirstName       string        `json:"first_name" gorm:"column:first_name;"`
 	Role            string        `json:"role" gorm:"column:role;"`
@@ -42,8 +42,8 @@ func (userCreate *UserCreate) Mask(isAdminOrOwned bool) {
 }
 
 type UserLogin struct {
-	Email    string `json:"email" gorm:"column:email;"`
-	Password string `json:"password" gorm:"column:password"`
+	Email    string `json:"email" form:"email"`
+	Password string `json:"password" form:"password"`
 }
 
 func (UserLogin) TableName() string {
@@ -66,7 +66,7 @@ const (
 	ErrUserEmailExisted = "ErrEmailExisted"
 	MsgUserEmailExited  = "email existed"
 
-	MsgUserDisabled  = "user disabled"
+	MsgUserDisabled  = "user disabled or banner"
 	ErrUserIsDisable = "ErrUserIsDisable"
 
 	ErrEmailOrPasswordInvalid = "ErrEmailOrPasswordInvalid"

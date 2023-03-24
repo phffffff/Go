@@ -35,7 +35,6 @@ func (biz *registerBiz) RegisterUser(c context.Context, data *userModel.UserCrea
 	}
 
 	salt := common.GetSalt(50)
-
 	data.Password = biz.hasher.Hash(data.Password + salt)
 	data.Salt = salt
 	data.Role = "user" //hard code
