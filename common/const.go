@@ -28,3 +28,9 @@ func AppRecover() {
 		log.Println("Revovery Error:", err)
 	}
 }
+
+type Requester interface {
+	GetUserId() int
+	GetEmail() string
+	GetRole() string
+}

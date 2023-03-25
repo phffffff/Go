@@ -9,7 +9,11 @@ import (
 
 func Profile(appCtx appContext.AppContext) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		user := c.MustGet(common.CurrentUser)
+		user, ok := c.MustGet(common.CurrentUser).(common.Requester)
+
+		if !ok {
+			panic(nil)
+		}
 
 		c.IndentedJSON(http.StatusOK, common.SimpleSuccesResponse(user))
 	}

@@ -14,7 +14,7 @@ func (sql *sqlStore) Create(c context.Context, data *restaurantModel.RestaurantC
 	//	}
 	//}()
 
-	if err := db.Table(data.TableName()).Create(&data).Error; err != nil {
+	if err := db.Table(data.TableName()).Create(data).Error; err != nil {
 		db.Rollback()
 		return common.ErrDB(err)
 	}

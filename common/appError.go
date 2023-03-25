@@ -79,8 +79,11 @@ func ErrInvalidRequest(err error) *AppError {
 func ErrCannotCRUDEntity(entity string, crud string, err error) *AppError {
 	return NewCustomError(
 		err,
-		fmt.Sprintf("cannot %s %s", crud, strings.ToLower(entity)),
-		fmt.Sprintf("ErrCannot%s%s", strings.ToTitle(entity)),
+		fmt.Sprintf("cannot %s %s", strings.ToLower(crud), strings.ToLower(entity)),
+		fmt.Sprintf(
+			"ErrCannot%s%s",
+			strings.ToTitle(strings.ToLower(crud)),
+			strings.ToTitle(strings.ToLower(entity))),
 	)
 }
 
@@ -97,5 +100,13 @@ func ErrEntityDeleted(entity string, err error) *AppError {
 		err,
 		fmt.Sprintf("%s deleted", entity),
 		fmt.Sprintf("Err%sDeleted", entity),
+	)
+}
+
+func ErrorNoPermission(err error) *AppError {
+	return NewCustomError(
+		err,
+		fmt.Sprintf("you have no permission"),
+		fmt.Sprintf("ErrNoPermission"),
 	)
 }

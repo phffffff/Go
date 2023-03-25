@@ -16,6 +16,10 @@ type User struct {
 	Avatar          *common.Image `json:"avatar" gorm:"column:avatar"`
 }
 
+func (u *User) GetUserId() int   { return u.Id }
+func (u *User) GetEmail() string { return u.Email }
+func (u *User) GetRole() string  { return u.Role }
+
 func (User) TableName() string {
 	return "users"
 }

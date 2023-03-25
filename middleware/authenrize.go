@@ -47,7 +47,8 @@ func RequiredAuth(appCtx appContext.AppContext) gin.HandlerFunc {
 		}
 		user, err := store.FindDataWithCondition(
 			c.Request.Context(),
-			map[string]interface{}{"id": payload.UserId})
+			map[string]interface{}{"id": payload.UserId},
+		)
 
 		if err != nil {
 			panic(err)

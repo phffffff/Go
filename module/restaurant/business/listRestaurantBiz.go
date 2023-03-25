@@ -6,32 +6,31 @@ import (
 	"context"
 )
 
-type ListRestaurantStore interface {
-	ListDataWithCondition(
+type ListRestaurantRepo interface {
+	ListRestaurant(
 		c context.Context,
 		filter *restaurantModel.Filter,
-		paging *common.Paging,
-		moreKeys ...string) ([]restaurantModel.Restaurant, error)
+		paging *common.Paging) ([]restaurantModel.Restaurant, error)
 }
 
 type listRestaurantBiz struct {
-	store ListRestaurantStore
+	repo ListRestaurantRepo
 }
 
-func NewListRestaurantBiz(store ListRestaurantStore) *listRestaurantBiz {
-	return &listRestaurantBiz{store: store}
+func NewListRestaurantBiz(repo ListRestaurantRepo) *listRestaurantBiz {
+	return &listRestaurantBiz{repo: repo}
 }
 
 func (biz *listRestaurantBiz) ListRestaurant(
 	c context.Context,
 	filter *restaurantModel.Filter,
-	paging *common.Paging,
-	moreKeys ...string) ([]restaurantModel.Restaurant, error) {
+	paging *common.Paging) ([]restaurantModel.Restaurant, error) {
+	data, err := biz.repo.ListRestaurant(c, filter, paging)
 
-	data, err := biz.store.ListDataWithCondition(c, filter, paging)
 	if err != nil {
 		return nil, common.ErrCannotCRUDEntity(restaurantModel.EntityName, common.ListConstant, err)
 	}
+
 	return data, nil
 
 }

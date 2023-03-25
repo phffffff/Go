@@ -2,7 +2,6 @@ package main
 
 import (
 	"RestAPI/component/appContext"
-	"RestAPI/component/uploadProvider"
 	"RestAPI/middleware"
 	"RestAPI/module/restaurant/transport/ginRestaurant"
 	"RestAPI/module/upload/transport/ginUpload"
@@ -40,16 +39,20 @@ func main() {
 
 	db.Debug()
 
-	s3BucketName := os.Getenv("S3BucketName")
-	s3Region := os.Getenv("S3Region")
-	s3APIKey := os.Getenv("S3APIKey")
-	s3SecretKey := os.Getenv("S3SecretKey")
-	s3Domain := os.Getenv("S3Domain")
+	//s3BucketName := os.Getenv("S3BucketName")
+	//s3Region := os.Getenv("S3Region")
+	//s3APIKey := os.Getenv("S3APIKey")
+	//s3SecretKey := os.Getenv("S3SecretKey")
+	//s3Domain := os.Getenv("S3Domain")
 	secretKey := os.Getenv("SYSTEM_SECRET")
 
-	s3Provider := uploadProvider.NewS3Provider(s3BucketName, s3Region, s3APIKey, s3SecretKey, s3Domain)
+	//s3Provider := uploadProvider.NewS3Provider(s3BucketName, s3Region, s3APIKey, s3SecretKey, s3Domain)
 
-	appCtx := appContext.NewAppCtx(db, s3Provider, secretKey)
+	appCtx := appContext.NewAppCtx(
+		db,
+		//s3Provider,
+		secretKey,
+	)
 
 	router := gin.Default()
 	router.Use(middleware.Recover(appCtx))
@@ -57,10 +60,26 @@ func main() {
 
 	v1 := router.Group("/RestAPI")
 
-	v1.POST("/register", ginUser.Regiter(appCtx))
-	v1.POST("/authenticate", ginUser.Login(appCtx))
-	v1.GET("/profile", middleware.RequiredAuth(appCtx), ginUser.Profile(appCtx))
-	v1.GET("/listRestaurants", ginRestaurant.ListRestaurant(appCtx))
+	v1.POST("/uploadImage", ginUpload.UploadImage(appCtx))
+
+	user := v1.Group("/user")
+	user.POST("/register", ginUser.Regiter(appCtx))
+	user.POST("/authenticate", ginUser.Login(appCtx))
+
+	admin := v1.Group(
+		"/admin",
+		middleware.RequiredAuth(appCtx),
+		middleware.RoleRequired(appCtx, "admin"),
+	)
+	{
+		admin.GET("/profile", ginUser.Profile(appCtx))
+	}
+
+	restaurant := v1.Group("/restaurant", middleware.RequiredAuth(appCtx))
+	restaurant.GET("/listRestaurants", ginRestaurant.ListRestaurant(appCtx))
+	restaurant.POST("/createRestaurant", ginRestaurant.CreateRestaurant(appCtx))
+	restaurant.PATCH("/deleteRestaurant/:id", ginRestaurant.DeleteRestaurant(appCtx))
+
 	v1.GET("/getNotes", func(c *gin.Context) {
 		var noteArr []Note
 
@@ -75,10 +94,6 @@ func main() {
 			})
 		}
 	})
-
-	v1.POST("/uploadImage", ginUpload.UploadImage(appCtx))
-	v1.POST("/createRestaurant", ginRestaurant.CreateRestaurant(appCtx))
-
 	v1.POST("/createNote", func(c *gin.Context) {
 		var data Note
 
@@ -160,7 +175,6 @@ func main() {
 			"data": data,
 		})
 	})
-	v1.PATCH("/deleteRestaurant/:id", ginRestaurant.DeleteRestaurant(appCtx))
 
 	v1.DELETE("/deleteNoteById/:id", func(c *gin.Context) {
 		id := c.Param("id")

@@ -19,6 +19,13 @@ func CreateRestaurant(appCtx appContext.AppContext) gin.HandlerFunc {
 			panic(err)
 		}
 
+		user, ok := c.MustGet(common.CurrentUser).(common.Requester)
+		if !ok {
+			panic(nil)
+		}
+
+		data.OwnerId = user.GetUserId()
+
 		//test trash middleware
 		//arr := []int{}
 		//log.Println(arr[1])
